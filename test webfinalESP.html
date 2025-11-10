@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Test de Afinidad con Marcos - Coaching Personal</title>
+
+  <!-- Tailwind CSS desde CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .star-btn svg { transition: transform .12s ease, fill .12s ease; }
+    .star-btn:hover svg { transform: scale(1.08); }
+    .star-on { fill: #f59e0b; }
+    .star-off { fill: #e6e6e6; }
+    /* Solo el círculo se rota, no el texto */
+    .progress-ring circle[data-ring] { transform: rotate(-90deg); transform-origin: 50% 50%; }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-slate-50 to-white min-h-screen text-slate-800 antialiased">
+
+  <main class="max-w-4xl mx-auto p-6">
+
+    <header class="mb-6">
+          <!-- Logo Header -->
+    <header class="mb-6 text-center">
+      <img src="MW_Lead_positivo.png" alt="MW Leadership Partners Logo" class="mx-auto w-48 mb-4">
+      <h1 class="text-3xl font-extrabold tracking-tight mb-2 text-slate-800">¿Encaja el estilo de coaching de Marcos contigo?</h1>
+      <p class="text-slate-600 leading-relaxed">
+        Este test te ayudará a descubrir si el estilo de coaching de <strong>Marcos</strong> encaja con lo que hoy necesitas.  
+        Marcos trabaja con personas que desean <strong>crecer personal y profesionalmente</strong>, potenciar su liderazgo y alcanzar resultados reales desde la autenticidad.
+      </p>
+      <p class="mt-3 text-slate-600">
+        <strong>Responde con sinceridad:</strong> no hay respuestas correctas o incorrectas — solo claridad para ambos.
+      </p>
+      <p class="mt-2 text-slate-500 text-sm">
+        <span class="font-semibold">Escala de respuesta:</span><br>
+        1️⃣ = No me identifico nada &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; 5️⃣ = Me identifico totalmente
+      </p>
+    </header>
+
+    <section id="quiz-section" class="bg-white shadow-lg rounded-2xl p-6 md:p-8">
+      <form id="quiz-form" class="space-y-6">
+        <div id="questions" class="space-y-6"></div>
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div class="flex gap-3">
+            <button type="button" id="submit-btn" class="px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">Ver resultado</button>
+            <button type="button" id="reset-btn" class="px-5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">Volver a empezar</button>
+          </div>
+          <div class="text-sm text-slate-500">Progreso: <span id="progress-text">0 / 0</span></div>
+        </div>
+      </form>
+    </section>
+
+    <section id="result-section" class="mt-6 hidden">
+      <div class="bg-gradient-to-r from-white to-slate-50 p-6 rounded-2xl shadow-lg flex flex-col md:flex-row items-center gap-6">
+        <div class="flex items-center justify-center w-full md:w-56 relative">
+          <!-- Círculo con texto centrado -->
+          <svg id="result-ring" class="w-36 h-36 progress-ring" viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0%" stop-color="#06b6d4"></stop>
+                <stop offset="100%" stop-color="#6366f1"></stop>
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="50" stroke="#e6e6e6" stroke-width="14" fill="none"></circle>
+            <circle data-ring id="progress-circle" cx="60" cy="60" r="50" stroke="url(#g1)" stroke-width="14" stroke-linecap="round" fill="none" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
+          </svg>
+          <div class="absolute text-center">
+            <span id="result-percent" class="text-2xl font-bold text-slate-800">0%</span>
+          </div>
+        </div>
+
+        <div class="flex-1">
+          <h2 id="result-title" class="text-xl font-bold">Afinidad: 0%</h2>
+          <p id="result-sub" class="text-slate-600 mt-1">Resultado y recomendaciones.</p>
+
+          <div class="mt-4">
+            <div class="h-4 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div id="affinity-bar" class="h-4 rounded-full" style="width:0%; background: linear-gradient(90deg,#06b6d4,#6366f1)"></div>
+            </div>
+            <p class="text-sm text-slate-500 mt-3" id="result-text">Selecciona "Ver resultado" para ver la afinidad.</p>
+
+            <div id="calendly-link" class="hidden mt-4">
+              <a href="https://calendly.com/marcos-marcsward/30min" target="_blank"
+                 class="inline-block px-5 py-3 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition">
+                 📅 Reserva una sesión de exploración de 30 minutos
+              </a>
+            </div>
+
+            <div class="mt-4 flex gap-3">
+              <button id="share-btn" type="button" class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Copiar resumen</button>
+              <button id="restart-btn" type="button" class="px-4 py-2 rounded-lg bg-white border text-slate-700 hover:bg-slate-50">Volver a empezar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="mt-6 text-xs text-slate-500 text-center">
+      © N Ok~ ® — Test de afinidad con el estilo de coaching de Marcos.
+    </footer>
+  </main>
+
+  <script>
+    const QUESTIONS = [
+      "Estoy listo/a para asumir la responsabilidad de mis resultados y dejar de culpar las circunstancias.",
+      "Quiero un proceso que me ayude a tomar decisiones con más claridad y confianza.",
+      "Estoy dispuesto/a a salir de mi zona de confort para lograr lo que deseo.",
+      "Me motiva trabajar en mis hábitos, mentalidad y liderazgo personal.",
+      "Prefiero a alguien que me escuche con empatía pero también me confronte con preguntas poderosas.",
+      "Me interesa un enfoque estructurado, con herramientas y seguimiento concreto.",
+      "Valoro la honestidad directa, incluso si a veces resulta desafiante.",
+      "Me gustaría tener a mi lado a un coach que combine cercanía con una mirada estratégica.",
+      "Estoy comprometido/a a aplicar lo que aprenda entre sesiones.",
+      "Estoy dispuesto/a a invertir tiempo, energía y recursos en mi desarrollo."
+    ];
+
+    const questionsContainer = document.getElementById('questions');
+    const answers = new Array(QUESTIONS.length).fill(0);
+
+    function createStarButton(qIndex, starValue) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'star-btn p-1 rounded-md focus:outline-none';
+      btn.dataset.q = qIndex;
+      btn.dataset.value = starValue;
+      btn.innerHTML = `
+        <svg width="28" height="28" viewBox="0 0 24 24">
+          <path class="star-path star-off" d="M12 .587l3.668 7.431L23.5 9.75l-5.75 5.602L19.335 24 12 19.897 4.665 24l1.585-8.648L0.5 9.75l7.832-1.732L12 .587z"/>
+        </svg>
+      `;
+      btn.addEventListener('click', () => setRating(qIndex, starValue));
+      return btn;
+    }
+
+    function renderQuestions() {
+      questionsContainer.innerHTML = '';
+      QUESTIONS.forEach((q, qi) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-50 border border-slate-100 p-4 rounded-xl flex flex-col md:flex-row md:items-center md:justify-between gap-3';
+        const left = document.createElement('div');
+        left.className = 'flex-1';
+        left.innerHTML = `<div class="font-medium text-slate-800">${q}</div>`;
+        const right = document.createElement('div');
+        right.className = 'flex items-center gap-1';
+        const starsWrap = document.createElement('div');
+        starsWrap.className = 'flex items-center gap-1';
+        starsWrap.id = `stars-${qi}`;
+        for (let s = 1; s <= 5; s++) starsWrap.appendChild(createStarButton(qi, s));
+        const selectedText = document.createElement('div');
+        selectedText.className = 'ml-3 text-sm text-slate-600 w-14 text-center';
+        selectedText.id = `selected-${qi}`;
+        selectedText.textContent = '—';
+        right.appendChild(starsWrap);
+        right.appendChild(selectedText);
+        card.appendChild(left);
+        card.appendChild(right);
+        questionsContainer.appendChild(card);
+      });
+      document.getElementById('progress-text').textContent = `0 / ${QUESTIONS.length}`;
+    }
+
+    function setRating(qIndex, value) {
+      answers[qIndex] = value;
+      const starsWrap = document.getElementById(`stars-${qIndex}`);
+      Array.from(starsWrap.children).forEach(btn => {
+        const v = Number(btn.dataset.value);
+        const path = btn.querySelector('.star-path');
+        if (v <= value) { path.classList.add('star-on'); path.classList.remove('star-off'); }
+        else { path.classList.add('star-off'); path.classList.remove('star-on'); }
+      });
+      document.getElementById(`selected-${qIndex}`).textContent = value + '★';
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const filled = answers.filter(v => v > 0).length;
+      document.getElementById('progress-text').textContent = `${filled} / ${QUESTIONS.length}`;
+    }
+
+    function calculateResult() {
+      const totalAnswered = answers.filter(v => v > 0).length;
+      if (totalAnswered === 0) return null;
+      const sum = answers.reduce((a,b)=>a+b,0);
+      const avg = sum / QUESTIONS.length;
+      const percent = Math.round((avg / 5) * 100);
+      return { avg: avg.toFixed(2), percent, answered: totalAnswered };
+    }
+
+    function animateRing(percent) {
+      const circle = document.getElementById('progress-circle');
+      const radius = 50;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference * (1 - percent / 100);
+      circle.style.transition = 'stroke-dashoffset 800ms cubic-bezier(.2,.9,.2,1)';
+      circle.style.strokeDasharray = circumference;
+      requestAnimationFrame(() => { circle.style.strokeDashoffset = offset; });
+    }
+
+    function showResult() {
+      const data = calculateResult();
+      if (!data) { alert('Por favor responde al menos una pregunta.'); return; }
+
+      const { percent, avg } = data;
+      document.getElementById('result-section').classList.remove('hidden');
+      document.getElementById('result-percent').textContent = percent + '%';
+      document.getElementById('result-title').textContent = `Afinidad: ${percent}%`;
+      document.getElementById('affinity-bar').style.width = percent + '%';
+      animateRing(percent);
+
+      let tone = '';
+      if (percent >= 85) tone = 'Alta afinidad — Parece que el estilo de Marcos encaja perfectamente contigo.';
+      else if (percent >= 60) tone = 'Buena afinidad — Hay una buena conexión; podrías explorar una sesión inicial.';
+      else if (percent >= 40) tone = 'Afinidad moderada — Tal vez necesites conversar con Marcos para confirmar el encaje.';
+      else tone = 'Baja afinidad — Quizás ahora no sea el momento o el enfoque que más te aporte.';
+
+      document.getElementById('result-sub').textContent = tone;
+      document.getElementById('result-text').textContent = `Tu promedio es ${avg} sobre 5 (${percent}%).`;
+
+      const link = document.getElementById('calendly-link');
+      if (percent >= 60 && percent <= 85) link.classList.remove('hidden');
+      else link.classList.add('hidden');
+
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function resetQuiz() {
+      answers.fill(0);
+      QUESTIONS.forEach((_,i)=>{
+        const stars = document.getElementById(`stars-${i}`);
+        Array.from(stars.children).forEach(btn=>{
+          const path=btn.querySelector('.star-path');
+          path.classList.remove('star-on'); path.classList.add('star-off');
+        });
+        document.getElementById(`selected-${i}`).textContent='—';
+      });
+      document.getElementById('progress-text').textContent=`0 / ${QUESTIONS.length}`;
+      document.getElementById('result-section').classList.add('hidden');
+      document.getElementById('affinity-bar').style.width='0%';
+      const circle=document.getElementById('progress-circle');
+      const r=50; const c=2*Math.PI*r; circle.style.strokeDasharray=c; circle.style.strokeDashoffset=c;
+    }
+
+    function copySummary() {
+      const data = calculateResult();
+      if (!data) { alert('Responde algunas preguntas antes de copiar.'); return; }
+      const text = `Afinidad con el coaching de Marcos: ${data.percent}%\nPromedio: ${data.avg}/5\nPreguntas respondidas: ${data.answered}/${QUESTIONS.length}`;
+      navigator.clipboard.writeText(text).then(()=>alert('Resumen copiado al portapapeles.'));
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderQuestions();
+      document.getElementById('submit-btn').addEventListener('click', showResult);
+      document.getElementById('reset-btn').addEventListener('click', resetQuiz);
+      document.getElementById('restart-btn').addEventListener('click', resetQuiz);
+      document.getElementById('share-btn').addEventListener('click', copySummary);
+    });
+  </script>
+</body>
+</html>
